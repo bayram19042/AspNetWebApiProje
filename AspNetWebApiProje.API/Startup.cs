@@ -32,6 +32,13 @@ namespace AspNetWebApiProje.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("UdemyCors", o =>
+                {
+                    o.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
             services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -62,7 +69,7 @@ namespace AspNetWebApiProje.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("UdemyCors");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

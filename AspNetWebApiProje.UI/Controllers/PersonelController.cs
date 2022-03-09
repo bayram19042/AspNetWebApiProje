@@ -2,11 +2,14 @@
 using AspNetWebApiProje.Core.Entities;
 using AspNetWebApiProje.Service.Interfaces;
 using AspNetWebApiProje.UI.Dtos;
+
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace AspNetWebApiProje.UI.Controllers
@@ -15,15 +18,28 @@ namespace AspNetWebApiProje.UI.Controllers
     {
         private readonly IPersonService _personService;
         private readonly IMapper _mapper;
-        public PersonelController(IPersonService personService, IMapper mapper)
+        private readonly IHttpClientFactory _httpClient;
+        public PersonelController(IPersonService personService, IMapper mapper,IHttpClientFactory httpClient)
         {
             _personService = personService;
             _mapper = mapper;
+            _httpClient = httpClient;
         }
         public async Task<IActionResult> Index()
         {
-            var personel = await _personService.GetAllAsync();
-            return View(_mapper.Map<List<PersonelDto>>(personel));
+
+            List<PersonelDto> personelDto;
+            var client = _httpClient.CreateClient();
+            var response = await client.GetAsync("https://localhost:44302/api/personels");
+            if (response.IsSuccessStatusCode)
+            {
+                personelDto = JsonConvert.DeserializeObject<List<PersonelDto>>(await response.Content.ReadAsStringAsync());
+                return View(_mapper.Map<List<PersonelDto>>(personelDto));
+            }
+            return View();
+            
+            //var personel = await _personelApiService.GetAllAsync();
+            
         }
 
         public IActionResult Create()

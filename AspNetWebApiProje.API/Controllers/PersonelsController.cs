@@ -3,6 +3,7 @@ using AspNetWebApiProje.Core.Entities;
 using AspNetWebApiProje.Core.Interfaces;
 using AspNetWebApiProje.Service.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using System;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace AspNetWebApiProje.API.Controllers
 {   
+    [EnableCors]
     [ApiController]
     [Route("api/[Controller]")]
     public class PersonelsController : ControllerBase
