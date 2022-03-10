@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace AspNetWebApiProje.API.Controllers
 {   
+  
     [EnableCors]
     [ApiController]
     [Route("api/[Controller]")]
@@ -28,7 +29,8 @@ namespace AspNetWebApiProje.API.Controllers
             _repo = repo;
             _mapper = mapper;
         }
-        [Route("")]
+        
+       
         public async Task<IActionResult> GetAll()
         {
             var result = await _repo.GetAllAsync();

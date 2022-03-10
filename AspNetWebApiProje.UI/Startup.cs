@@ -42,7 +42,7 @@ namespace AspNetWebApiProje.UI
             services.AddScoped<IUow, Uow>();
             services.AddDbContext<PersonelContext>(opt =>
             {
-                opt.UseSqlServer("Data Source=DESKTOP-T92MFE4\\SQLEXPRESS; database = PersonelAdresVeriDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+                opt.UseSqlServer("server=(localdb)\\MSSQLLocalDB; database = PersonelAdresVTDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             });
         }
 
@@ -58,7 +58,9 @@ namespace AspNetWebApiProje.UI
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllerRoute(
+       name: "default",
+       pattern: "{controller=personel}/{action=Index}/{id?}");
             });
         }
     }

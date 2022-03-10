@@ -6,18 +6,24 @@
 
 
 <div class="container">
+    @if (TempData["hata"] != null)
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @TempData["hata"]
+        </div>
+    }
     <form asp-action="Create" method="post">
         <div class="form-group">
             <label for="exampleInputEmail1">Adınız</label>
             <input type="text" class="form-control" asp-for="@Model.Name" aria-describedby="emailHelp">
-            <span  class="form-text text-danger" asp-validation-for="@Model.Name"></span>
+            <span class="form-text text-danger" asp-validation-for="@Model.Name"></span>
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1">Soyadınız</label>
-            <input type="text" asp-for="@Model.Surname" class="form-control"  >
+            <input type="text" asp-for="@Model.Surname" class="form-control">
             <span class="text-danger form-text" asp-validation-for="@Model.Surname"></span>
         </div>
-      
+
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AspNetWebApiProje.UI.Controllers
@@ -36,7 +37,11 @@ namespace AspNetWebApiProje.UI.Controllers
                 personelDto = JsonConvert.DeserializeObject<List<PersonelDto>>(await response.Content.ReadAsStringAsync());
                 return View(_mapper.Map<List<PersonelDto>>(personelDto));
             }
-            return View();
+            else
+            {
+                return View(new List<PersonelDto>());
+            }
+            
             
             //var personel = await _personelApiService.GetAllAsync();
             
@@ -49,33 +54,72 @@ namespace AspNetWebApiProje.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreatePersonelDto personel)
         {
+            var client = _httpClient.CreateClient();
+
             if(ModelState.IsValid)
             {
-                await _personService.CreateAsync(_mapper.Map<Personel>(personel));
-
-                return RedirectToAction("index");
+                var jsonData = JsonConvert.SerializeObject(personel);
+            StringContent content = new StringContent(jsonData,Encoding.UTF8,"application/json");
+               var response =  await client.PostAsync("https://localhost:44302/api/personels",content);
+                //await _personService.CreateAsync(_mapper.Map<Personel>(personel));
+                if(response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("index");
+                }
+                else
+                {
+                    TempData["hata"] = "Bir hata ile karşılaşıldı.";
+                }
             }
             return View(personel);
         }
 
         [HttpGet]
-        public  IActionResult Delete(int id)
+        public async  Task<IActionResult> Delete(int id)
         {
-            _personService.Remove(id);
+            var client = _httpClient.CreateClient();
+            
+       
+            var silme =await client.DeleteAsync($"https://localhost:44302/api/personels/{id}");
+            if(silme.IsSuccessStatusCode)
+            {
+                return RedirectToAction("index");
+            }
+           
             return RedirectToAction("index");
         }
 
         public async Task<IActionResult> Update(int id)
         {
-            var veri = await _personService.GetByIdAsync(id);
-            return View(_mapper.Map<PersonelDto>(veri));
+            var client = _httpClient.CreateClient();
+            var jsonData = await client.GetAsync($"https://localhost:44302/api/personels/{id}");
+            if(jsonData.IsSuccessStatusCode)
+            {
+                var oku =await jsonData.Content.ReadAsStringAsync();
+                var veri = JsonConvert.DeserializeObject<PersonelDto>(oku);
+                return View(veri);
+            }
+            else
+            {
+                TempData["hata"] = "Bir hata ile karşılaşıldı.";
+            }
+            return View();
+           // var veri = await _personService.GetByIdAsync(id);
+            
         }
         [HttpPost]
-        public IActionResult Update(PersonelDto personel)
+        public async Task<IActionResult> Update(PersonelDto personel)
         {
+            var client = _httpClient.CreateClient();
+            
             if(ModelState.IsValid)
             {
-                _personService.Update(_mapper.Map<Personel>(personel));
+
+                var veri = JsonConvert.SerializeObject(personel);
+                
+                StringContent content = new StringContent(veri,Encoding.UTF8,"application/json");
+                await client.PutAsync("https://localhost:44302/api/personels", content);
+                //_personService.Update(_mapper.Map<Personel>(personel));
                 return RedirectToAction("index");
             }
             return View(personel);
